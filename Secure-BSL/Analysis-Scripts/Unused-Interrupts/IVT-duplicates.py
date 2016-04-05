@@ -7,13 +7,12 @@
 # and Travis Goodspeed 
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: February 2016
+# Date: March 2016
 # Description:  Gets the number of duplicates 
 # found in the IVT of applications
 ############################################## 
 import itertools, time
 from collections import Counter
-
 
 listOfAddress = []
 listOfNoDuplicates = []
@@ -22,7 +21,7 @@ for i in range(0,93):
     listOfAddress.append([])
 
 #append the value to designated positions of all passwords
-with open('IVT-PWD-addresses.csv', 'r') as fd:
+with open('NEW-IVT-addresses.csv', 'r') as fd:
     pwdVals = []
     app=0
     for item in fd:

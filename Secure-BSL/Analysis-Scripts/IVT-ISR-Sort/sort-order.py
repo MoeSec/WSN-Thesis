@@ -7,10 +7,10 @@
 # and Travis Goodspeed 
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: February 2016
+# Date: March 2016
 # Description:  Sorts the addresses found in 
 # the IVT.
-############################################## 
+##############################################  
 import itertools, time
 from collections import Counter
 
@@ -23,7 +23,7 @@ for i in range(0,93):
     listSortedAddress.append([])
 
 #append the value to designated positions of all passwords
-with open('IVT-PWD-addresses.csv', 'r') as fd:
+with open('NEW-IVT-addresses.csv', 'r') as fd:
     pwdVals = []
     app=0
     for item in fd:
@@ -31,7 +31,7 @@ with open('IVT-PWD-addresses.csv', 'r') as fd:
         pwdVals = item.split(',')
         j =0
         for i in range(0,len(pwdVals)):
-	    temp = pwdVals[i] + str(j-1)
+	    temp = pwdVals[i] + ":" + str(j-1)
             listOfAddress[app].append(temp)
             j += 1
         app += 1

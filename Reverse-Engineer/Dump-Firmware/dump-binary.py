@@ -1,18 +1,17 @@
 #!/usr/bin/
 ##############################################
-# File name: pwd-time.py
+# File name: dump-firmware.py
 # Author: Mauricio Tellez Nava
 # Reference: Serial Bootstrap Loader software 
-# for the MSP430 - Chris Liechti, Colin Domoney
+# for the MSP430 - Chris LieGchti, Colin Domoney
 # and Travis Goodspeed 
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: February 2016
-# Description:  The following script calcucates
-# the time it takes to check a correct/incorrect
-# password.
-##############################################  
-import sys, serial, struct, string, time
+# Date: 03/07/16
+# Description: Dumps the firmware found in 
+# MSP430 flash memory
+##############################################   
+import sys, serial, struct, string, time, os
 
 # Main:
 BSL_SYNC = 0x80
@@ -152,7 +151,26 @@ def comRxHeader():
     return rxHeader, rxNum
 
 def comRxFrame(rxNum):
-    return 0
+    rxFrame = chr(DATA_FRAME | rxNum)
+    rxFrameData = serialport.read(3)
+    if len(rxFrameData) != 3:
+        print "Timeout 1"
+    rxFrame = rxFrame + rxFrameData
+    if rxFrame[1] == chr(0) and rxFrame[2] == rxFrame[3]:
+        rxLengthCRC = ord(rxFrame[2]) + 2
+        rxFrameData = serialport.read(rxLengthCRC)
+        if len(rxFrameData) != rxLengthCRC:
+            print "Timeout 2"
+        rxFrame = rxFrame + rxFrameData
+        checksum = calcChecksum(rxFrame, ord(rxFrame[2]) + 4)
+        if rxFrame[ord(rxFrame[2])+4] == chr(0xff & checksum) and \
+            rxFrame[ord(rxFrame[2])+5] == chr(0xff & (checksum >> 8)):
+            return rxFrame
+        else:
+            print "incorrect checksum"
+    else:
+        print "error dumping data"
+
 
 def comTxRx(cmd, dataOut, length):
     global seqNo
@@ -192,11 +210,11 @@ def comTxRx(cmd, dataOut, length):
             #print "Mote Data Access Success"
             return
     elif rxHeader == DATA_NAK:
-        # "Mote Data Access Failed"
-	return
+        #print "Mote Data Access Failed"
+	    return
     elif rxHeader == DATA_FRAME:
         if rxNum == reqNo:
-            print "Binary Data received"
+            #print "Binary Data received"
             rxFrame = comRxFrame(rxNum)
             return rxFrame
     elif rxHeader == CMD_FAILED:
@@ -233,9 +251,6 @@ def bslTxRx(cmd, addr, length=0, blkout=None, wait=0):
 
     # Synchronize with Mote
     bslSync(wait)
-   
-    #serialport.setBaudrate(38400)
- 
 
     # Send/Receive data to/from Mote
     rxFrame = comTxRx(cmd, dataOut, len(dataOut))
@@ -244,16 +259,21 @@ def bslTxRx(cmd, addr, length=0, blkout=None, wait=0):
     else:
         return rxFrame
 
-def testTime(numAttempts,typeOfPwd,passwd,baudrate):
-    start = time.time()
-    for i in range(0,numAttempts):
-        bslTxRx(BSL_TXPWORD,  # Command: Transmit Password
-            0xffe0,  # Address of interupt vectors
-            0x0020,  # Number of bytes
-            passwd,  # password
 
-            wait=0)
-    print typeOfPwd,",",baudrate,",",numAttempts,",",time.time() - start
+def flashMemoryDump(start, size, wait=0):
+    data = ''
+    pStart = 0
+    maxData = 240-16
+    while pStart<size:
+        length = maxData
+        if pStart+length > size:
+            length = size - pStart
+        data = data + bslTxRx(BSL_RXBLK,
+                        pStart+start,
+                        length,
+                        wait=wait)[:-2]
+        pStart = pStart + length
+    return data
 
 def main():
 
@@ -261,92 +281,49 @@ def main():
 
     # connect to mote
     comInit(port)
-    print "Connected to: " + serialport.portstr
 
-    # Correct Password Test
-    passwdHex = [0x18,0x45,0xbc,0x78,0x18,0x45,0x18,0x45,0xbe,0x77,0x54,0x77,0x36,0x77,0x18,0x45,0xc6,
-		 0x79,0x6a,0x79,0x18,0x45,0x18,0x45,0x98,0x77,0x7a,0x77,0x18,0x45,0x00,0x40]
-    correctPwd = ''
+    # Get password
+    with open(sys.argv[2], 'r') as fd:
+        passwdHex = fd.read().split()
+    pwd = ''
     for i in passwdHex:
-        correctPwd += chr(i)
+        pwd += chr(int(i,0))
 
-    # Incorrect password test
-    passwdHex = [0x20, 0x45, 0x8e, 0x8e, 0xdc, 0x8c, 0x8a, 0x8c, 0x8e, 0x8d, 0x1c, 0x8c, 0xfe, 0x8b, 0x18, 0x45, 0x98,
-                 0x8f, 0x3c, 0x8f, 0x18, 0x45, 0x18, 0x45, 0x60, 0x8c, 0x42, 0x8c, 0x18, 0x45, 0x00, 0x40]
-    incorrectPwd = ''
-    for i in passwdHex:
-        incorrectPwd += chr(i)
-    
-    baudrate = 9600
-    for i in range (0,10):
-        print "Trial:",i
-    # Normal Baurate Correct Password	
-        testTime(1,"Correct",correctPwd,baudrate) #1
-        testTime(200,"Correct",correctPwd,baudrate) #200
-        testTime(400,"Correct",correctPwd,baudrate) #400
-        testTime(600,"Correct",correctPwd,baudrate) #600
-        testTime(800,"Correct",correctPwd,baudrate) #800
-        testTime(1000,"Correct",correctPwd,baudrate) #1000
-    # Normal Baurate Incorrect Password
-        testTime(1,"Incorrect",incorrectPwd,baudrate) #1
-        testTime(200,"Incorrect",incorrectPwd,baudrate) #200
-        testTime(400,"Incorrect",incorrectPwd,baudrate) #400
-        testTime(600,"Incorrect",incorrectPwd,baudrate) #600
-        testTime(800,"Incorrect",incorrectPwd,baudrate) #800
-        testTime(1000,"Incorrect",incorrectPwd,baudrate) #1000
-	
-    
-    # baurate of 19200
-    a, l = 0x86e0, 0x0001
-    bslTxRx(BSL_CHANGEBAUD,   #Command: change baudrate
-                    a, l)     #args are coded in adr and len
-    time.sleep(0.010)         #recomended delay
-    serialport.setBaudrate(19200) 
-    baudrate = 19200
+    # Get Start Address and Size
+    try:
+        startAddress = int(sys.argv[3])
+        dumpSize = int(sys.argv[4])
+    except ValueError:
+        try:
+            startAddress = int(sys.argv[3],16)
+            dumpSize = int(sys.argv[4],16)
+        except ValueError:
+            print "Invalid start address or size"
 
-    for i in range(0,10):
-        print "Trial: ",i
-    # Normal Baurate Correct Password	
-        testTime(1,"Correct",correctPwd,baudrate) #1
-        testTime(200,"Correct",correctPwd,baudrate) #200
-        testTime(400,"Correct",correctPwd,baudrate) #400
-        testTime(600,"Correct",correctPwd,baudrate) #600
-        testTime(800,"Correct",correctPwd,baudrate) #800
-        testTime(1000,"Correct",correctPwd,baudrate) #1000
-    # Normal Baurate Incorrect Password
-        testTime(1,"Incorrect",incorrectPwd,baudrate) #1
-        testTime(200,"Incorrect",incorrectPwd,baudrate) #200
-        testTime(400,"Incorrect",incorrectPwd,baudrate) #400
-        testTime(600,"Incorrect",incorrectPwd,baudrate) #600
-        testTime(800,"Incorrect",incorrectPwd,baudrate) #800
-        testTime(1000,"Incorrect",incorrectPwd,baudrate) #1000
-
-
-    # baurate of 38400 
+    #Set Baudrate
     a,l = 0x87e0, 0x0002
     bslTxRx(BSL_CHANGEBAUD,   #Command: change baudrate
                     a, l)                   #args are coded in adr and len
     time.sleep(0.010)                   #recomended delay
-    serialport.setBaudrate(38400)
+    serialport.setBaudrate(38400)   
     baudrate = 38400
 
-    for i in range(0,10):
-        print "Trial: ",i
-    # Normal Baurate Correct Password	
-        testTime(1,"Correct",correctPwd,baudrate) #1
-        testTime(200,"Correct",correctPwd,baudrate) #200
-        testTime(400,"Correct",correctPwd,baudrate) #400
-        testTime(600,"Correct",correctPwd,baudrate) #600
-        testTime(800,"Correct",correctPwd,baudrate) #800
-        testTime(1000,"Correct",correctPwd,baudrate) #1000
-    # Normal Baurate Incorrect Password
-        testTime(1,"Incorrect",incorrectPwd,baudrate) #1
-        testTime(200,"Incorrect",incorrectPwd,baudrate) #200
-        testTime(400,"Incorrect",incorrectPwd,baudrate) #400
-        testTime(600,"Incorrect",incorrectPwd,baudrate) #600
-        testTime(800,"Incorrect",incorrectPwd,baudrate) #800
-        testTime(1000,"Incorrect",incorrectPwd,baudrate) #1000
+    #Send Password for Full Access
+    bslTxRx(BSL_TXPWORD,  # Command: Transmit Password
+            0xffe0,  # Address of interupt vectors
+            0x0020,  # Number of bytes
+            pwd,
+            wait=1)
 
+    # Get Flash memory data
+    binaryData = flashMemoryDump(startAddress,dumpSize)
+    try:
+        os.remove("app-bin")
+    except OSError:
+        pass
+    with open("app-bin","w+") as fd:
+	for i in binaryData:
+	    fd.write(i)
 
 if __name__ == '__main__':
     main()

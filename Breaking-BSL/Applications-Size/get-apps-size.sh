@@ -4,7 +4,7 @@
 # Author: Mauricio Tellez Nava
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: 02/18/16
+# Date: February 2016
 # Description: Gets the size of the binaries 
 # of TinyOS sample applications.
 ##############################################  

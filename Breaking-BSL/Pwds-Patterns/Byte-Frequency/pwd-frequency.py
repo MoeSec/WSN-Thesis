@@ -7,7 +7,7 @@
 # and Travis Goodspeed 
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: 02/18/16
+# Date: February 2016
 # Description:  Collects the frequency count 
 # of the bytes found in the IVT
 ############################################## 

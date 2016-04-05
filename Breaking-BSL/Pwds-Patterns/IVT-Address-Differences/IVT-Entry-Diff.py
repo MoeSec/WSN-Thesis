@@ -7,7 +7,7 @@
 # and Travis Goodspeed 
 # Email : telle2mx@dukes.jmu.edu
 # Course: CS-700 - Thesis Research
-# Date: 02/18/16
+# Date: February 2016
 # Description:  Take the difference between 
 # the sorted addresses found in the IVT.
 ############################################## 

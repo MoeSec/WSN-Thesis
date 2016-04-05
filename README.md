@@ -1,8 +1,8 @@
 # WSN-Thesis
 Repository includes all scripts, software, and results created during the completion of my thesis
 
-As a Graduate student at JMU, I did a thesis on investigating the security of Wireless Sensor Networks.   The WSN-Thesis repository 
-of scripts used during the investigation as well as code to implement a secure WSN enviroment. 
+As a Graduate student at JMU, I did a thesis on investigating the security of Wireless Sensor Networks.   The WSN-Thesis 
+repository consists of analysis scripts as well as code to implement a secure WSN enviroment. 
 
 Directories:
 

@@ -15,7 +15,7 @@ Breaking-BSL
   1. Applications-Size : script to get applications binary size
   2. Brute-Force-Time : script to get brute force times
   3. Pwds-Dump : scripts to get passwords from the TinyOS applications
-	4. Pwds-Patters : scripts to analyze the passwords (or the IVT values)
+  4. Pwds-Patters : scripts to analyze the passwords (or the IVT values)
 
 Reverse-Engineer
   1. Disassemble : script to convert address of disassemble binaniers

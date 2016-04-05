@@ -7,9 +7,9 @@ repository consists of analysis scripts as well as code to implement a secure WS
 Directories:
 
 Analysis-Results
-	1. STMS : pcap files of monitiong the STMS network
-	2. Secure-BSL : excel files of analysing the random passwords 
-	3. tos-BSL : excel files of analysing the IVT passwords 
+  1. STMS : pcap files of monitiong the STMS network
+  2. Secure-BSL : excel files of analysing the random passwords 
+  3. tos-BSL : excel files of analysing the IVT passwords 
 
 Breaking-BSL 
   1. Applications-Size : script to get applications binary size

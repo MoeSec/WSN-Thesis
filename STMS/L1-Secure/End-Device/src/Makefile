@@ -1,0 +1,6 @@
+COMPONENT=EndDeviceAppC
+
+CFLAGS += -DCC2420_HW_SECURITY
+
+TINYOS_ROOT_DIR?=../../../../..
+include $(TINYOS_ROOT_DIR)/Makefile.include

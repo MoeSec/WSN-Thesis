@@ -1,0 +1,20 @@
+configuration CoordinatorAppC{
+}
+implementation{
+	//General Components
+	components MainC;
+	components LedsC;
+	components CoordinatorC as App;
+	App.Boot -> MainC.Boot;
+	App.Leds -> LedsC;
+	
+	//Radion Components
+	components ActiveMessageC;
+	App.Receive -> ActiveMessageC.Receive;
+	App.AMpacket -> ActiveMessageC;
+	
+	//Security Components
+	components CC2420KeysC;
+	App.CC2420Keys -> CC2420KeysC;
+	
+}

@@ -1,0 +1,32 @@
+#include "profile.h"
+
+module EndDeviceC{
+	//General Interfaces 
+	uses{
+		interface Boot;
+		interface Leds;
+		interface Timer<TMilli> as SendTimer;
+	}
+	
+	//Radio Interfaces 
+	uses{
+		interface AMSend;
+		interface SplitControl as AMControl;
+		interface Packet;
+	}
+	
+	//Security Interfaces
+	uses{
+		interface CC2420SecurityMode as CC2420Security;
+		interface CC2420Keys;
+	}
+	
+	//Sensor Interfaces
+	uses{
+		interface Read<uint16_t> as TempRead;
+	}
+}
+implementation{
+	
+	
+}

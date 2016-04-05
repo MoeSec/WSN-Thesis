@@ -1,0 +1,8 @@
+COMPONENT = EndDeviceAppC
+CFLAGS += -I$(shell pwd)/..
+
+TINYOS_ROOT_DIR?=../../../../..
+include $(TINYOS_ROOT_DIR)/Makefile.include
+
+#include IEEE 802.15.4 Interfaces
+include $(TINYOS_OS_DIR)/lib/mac/tkn154/Makefile.include

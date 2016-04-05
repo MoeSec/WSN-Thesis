@@ -1,0 +1,52 @@
+#include "profile.h"
+
+module EndDeviceC{
+	//General Interfaces 
+	uses{
+		interface Boot;
+		interface Leds;
+		interface Timer<TMilli> as SendTimer;
+	}
+	
+	//Radio Interfaces 
+	uses{
+		interface AMSend;
+		interface SplitControl as AMControl;
+		interface Packet;
+	}
+	
+	//Security Interfaces
+	uses{
+		interface CC2420SecurityMode as CC2420Security;
+		interface CC2420Keys;
+	}
+	
+	//Sensor Interfaces
+	uses{
+		interface Read<uint16_t> as TempRead;
+	}
+}
+implementation{
+	
+	event void Boot.booted(){
+		// TODO Auto-generated method stub
+	}
+
+	event void AMSend.sendDone(message_t *msg, error_t error){
+		// TODO Auto-generated method stub
+	}
+
+	event void AMControl.startDone(error_t error){
+		// TODO Auto-generated method stub
+	}
+
+	event void AMControl.stopDone(error_t error){
+		// TODO Auto-generated method stub
+	}
+	
+	event void CC2420Keys.setKeyDone(uint8_t keyNo, uint8_t* skey){}
+
+	event void TempRead.readDone(error_t result, uint16_t val){
+		// TODO Auto-generated method stub
+	}
+}

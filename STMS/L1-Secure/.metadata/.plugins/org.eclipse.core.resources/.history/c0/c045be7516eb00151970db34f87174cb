@@ -1,0 +1,13 @@
+#include "profile.h"
+
+module EndDeviceC{
+	//General Interfaces 
+	uses{
+		interface Boot;
+		interface Leds;
+		interface Timer<TMilli> as SendTimer;
+	}
+	
+}
+implementation{
+}

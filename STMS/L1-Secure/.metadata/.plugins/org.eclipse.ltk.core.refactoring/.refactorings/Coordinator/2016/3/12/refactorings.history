@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 5 elements from project &apos;Coordinator&apos;&#x0A;- Original project: &apos;Coordinator&apos;&#x0A;- Original elements:&#x0A;     BaseStationC.nc&#x0A;     BaseStationP.nc&#x0A;     EndDeviceAppC.nc&#x0A;     Makefile&#x0A;     README.txt" description="Delete elements" element1="src/Makefile" element2="src/EndDeviceAppC.nc" element3="src/BaseStationP.nc" element4="src/README.txt" element5="src/BaseStationC.nc" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="5" stamp="1458093912393" subPackages="false" version="1.0"/>
+</session>

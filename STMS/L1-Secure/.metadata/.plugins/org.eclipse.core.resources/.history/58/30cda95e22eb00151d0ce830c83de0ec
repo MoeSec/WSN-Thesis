@@ -1,0 +1,55 @@
+#include "profile.h"
+#include <stdio.h>
+
+module CoordinatorC{
+	//General Interfaces 
+	uses{
+		interface Boot;
+		interface Leds;
+	}
+	
+	//Radio Interfaces
+	uses{
+		interface SplitControl as RadioControl;
+		interface Receive;
+	}
+	
+	//Security Interfaces 
+	uses{
+		interface CC2420Keys;
+	}
+
+		
+	
+}
+implementation{
+
+	//Key
+	uint8_t key[16] = {0x98,0x67,0x7F,0xAF,0xD6,0xAD,0xB7,0x0C,0x59,0xE8,0xD9,0x47,0xC9,0x71,0x15,0x0F};
+	
+	event void Boot.booted(){
+		call RadioControl.start();
+	}
+
+	event void RadioControl.startDone(error_t error){
+		if (err == SUCCESS)
+			call CC2420Keys.setKey(1,key);
+		else
+			call RadioControl.start();
+	}
+
+	event void RadioControl.stopDone(error_t error){}
+
+	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
+		if(len != sizeof(PayloadMsg_t)){
+			call Leds.led1On();
+			printf("Failed to Receive Temperature Data\r\n");
+		}
+		else{
+			PayloadMsg_t* data = (PayloadMsg_t*)payload;
+			uint16_t fahrenheit = (-39.6 + 0.01 * payload->temp) * 1.8 + 32;			
+			printf("Room %d current temperature: %d\r\n", payload->nodeID, fahrenheit);
+   		call Leds.led2Toggle();	
+		}			
+	}
+}
